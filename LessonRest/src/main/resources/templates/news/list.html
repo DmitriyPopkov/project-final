@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-navbar {
+            padding: 10px;
+            font-size: 20px;
+            background-color: #638cab;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .custom-navbar .navbar-nav > li > a {
+            color: #333333;
+        }
+        .custom-navbar .navbar-nav > li:hover {
+            background-color: #e7e7e7;
+        }
+        .custom-navbar .navbar-nav > li:hover > a {
+            color: #555555;
+        }
+        .custom-navbar .dropdown-menu {
+            background-color: #f8f8f8;
+        }
+        .custom-navbar .dropdown-menu > li > a {
+            color: #333333;
+        }
+         body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+ #dynamicTable {
+ border-collapse: collapse;
+ width: 100%;
+ margin-bottom: 20px;
+ }
+ #dynamicTable, #dynamicTable th, #dynamicTable td {
+ border: 2px solid #000000;
+ }
+ #dynamicTable th, #dynamicTable td {
+ padding: 8px;
+ text-align: left;
+ }
+ #dynamicTable th {
+ background-color: #ffffff;
+ color: #000000;
+ }
+ #dynamicTable td {
+ background-color: #ffffff;
+ color: #000000;
+ }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom custom-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Меню</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная страница</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+<h1>News</h1>
+
+<!-- Filter by Editor ID and Sticker -->
+<form th:action="@{/news}" method="get" style="margin-bottom: 15px;" th:if="${!hideFilters}">
+    <label for="editorIdFilter">Найти новости редактора:</label>
+    <select id="editorIdFilter" name="editorId" style="margin-right: 10px;">
+        <option value="">Все редакторы</option>
+        <option th:each="editor : ${editors}"
+                th:value="${editor.id}"
+                th:text="${editor.firstname + ' ' + editor.lastname}"
+                th:selected="${editorIdFilter != null and editor.id == editorIdFilter}">
+            Editor Name
+        </option>
+    </select>
+    
+    <label for="stickerFilter" style="margin-left: 15px;">Найти новости по стикеру:</label>
+    <select id="stickerFilter" name="stickerId" style="margin-right: 10px;">
+        <option value="">Все стикеры</option>
+        <option th:each="sticker : ${allStickers}"
+                th:value="${sticker.id}"
+                th:text="${sticker.name}"
+                th:style="'color: ' + ${sticker.color} ?: '#000000'"
+                th:selected="${stickerIdFilter != null and sticker.id == stickerIdFilter}">
+            Sticker Name
+        </option>
+    </select>
+    
+    <button type="submit" class="btn btn-primary">Фильтровать</button>
+    <a th:href="@{/news}" class="btn btn-secondary">Сбросить</a>
+</form>
+
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#newsModal" th:if="${currentUserRole == 'ADMIN' or (currentUserRole == 'EDITOR')}">
+    Create New News
+</button>
+<table border="1",
+       id="dynamicTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Editor </th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="news : ${news}">
+        <td th:text="${news.id}">1</td>
+        <td th:text="${news.title}">Title</td>
+        <td th:text="${news.content}" style="font-size: 8px;">Content</td>
+        <td th:text="${news.editorId}">Editor ID</td>
+       
+        <td th:text="${news.created}">2026-07-03</td>
+        <td th:text="${news.modified}">2026-07-03</td>
+        <td>
+            <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-sm btn-info">View</a>
+           <!-- <a th:href="@{/news/{id}/edit(id=${news.id})}" class="btn btn-sm btn-warning" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and news.editorId == currentUserEditorId)}">Edit</a>-->
+             <a th:href="@{/news/{id}/edit(id=${news.id})}" class="btn btn-sm btn-warning" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and currentUserRole != 'USER' and news.editorId == currentUserEditorId )}">Edit</a>
+           <!-- <button type="button" class="btn btn-sm btn-warning" disabled th:if="${currentUserRole != 'ADMIN' and (currentUserEditorId == null or news.editorId != currentUserEditorId)}">Edit</button>-->
+             <button type="button" class="btn btn-sm btn-warning" disabled th:if="${currentUserRole != 'ADMIN' and (currentUserEditorId == null or currentUserRole == 'USER' or news.editorId != currentUserEditorId) }">Edit</button>
+            <form th:action="@{/news/{id}/delete(id=${news.id})}" method="post" style="display:inline;" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and news.editorId == currentUserEditorId)}">
+                <button type="submit" class="btn btn-sm btn-danger" th:if="${currentUserRole =='ADMIN' or (currentUserEditorId != null and currentUserRole != 'USER' and news.editorId == currentUserEditorId )}">Delete</button>
+            </form>
+            <button type="button" class="btn btn-sm btn-danger" disabled th:if="${currentUserRole != 'ADMIN' and (currentUserEditorId == null or currentUserRole == 'USER' or news.editorId != currentUserEditorId)}">Delete</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</main>
+<!-- Modal Create News -->
+<div class="modal fade" id="newsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New News</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newsForm" th:action="@{/news/modal/create}" method="post" th:object="${newsForm}">
+                    <div class="mb-3">
+                        <label for="newsTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="newsTitle" name="title" required>
+                        <div class="invalid-feedback">Title cannot be empty</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="newsContent" name="content" rows="3" required></textarea>
+                        <div class="invalid-feedback">Content cannot be empty</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsEditorId" class="form-label">Editor</label>
+                        <select class="form-select" id="newsEditorId" name="editorId" th:disabled="${currentUserRole == 'EDITOR' or currentUserRole == 'ROLE_EDITOR'}" required>
+                            <option value="">Select Editor</option>
+                            <option th:each="editor : ${editors}"
+                                    th:value="${editor.id}"
+                                    th:text="${editor.firstname + ' ' + editor.lastname}"
+                                    th:selected="${currentUserRole == 'EDITOR' or currentUserRole == 'ROLE_EDITOR' and currentUserEditorId == editor.id}">
+                                Editor Name
+                            </option>
+                        </select>
+                        <div class="invalid-feedback">Please select an editor</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsCreated" class="form-label">Created</label>
+                        <input type="datetime-local" class="form-control" id="newsCreated" name="created">
+                        <div class="form-text">Leave empty to use current timestamp</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsModified" class="form-label">Modified</label>
+                        <input type="datetime-local" class="form-control" id="newsModified" name="modified">
+                        <div class="form-text">Automatically set to Created value</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" id="newsSubmitBtn" disabled>Записать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Contact Info -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Имя:</strong> Попков Дмитрий</p>
+                <p><strong>Email:</strong> <a href="mailto:rutcha@rambler.ru">rutcha@rambler.ru</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Валидация формы и управление кнопкой отправки для модального окна создания новости
+    const newsForm = document.getElementById('newsForm');
+    const newsSubmitBtn = document.getElementById('newsSubmitBtn');
+    const newsTitleInput = document.getElementById('newsTitle');
+    const newsContentInput = document.getElementById('newsContent');
+    const newsEditorIdInput = document.getElementById('newsEditorId');
+    const newsCreatedInput = document.getElementById('newsCreated');
+
+    function validateNewsForm() {
+        const title = newsTitleInput.value.trim();
+        const content = newsContentInput.value.trim();
+        const editorId = newsEditorIdInput.value;
+        
+        let isValid = true;
+
+        // Валидация Title
+        if (title.length === 0) {
+            newsTitleInput.classList.add('is-invalid');
+            newsTitleInput.classList.remove('is-valid');
+            isValid = false;
+        } else {
+            newsTitleInput.classList.remove('is-invalid');
+            newsTitleInput.classList.add('is-valid');
+        }
+
+        // Валидация Content
+        if (content.length === 0) {
+            newsContentInput.classList.add('is-invalid');
+            newsContentInput.classList.remove('is-valid');
+            isValid = false;
+        } else {
+            newsContentInput.classList.remove('is-invalid');
+            newsContentInput.classList.add('is-valid');
+        }
+
+        // Валидация Editor
+        if (editorId === '' || editorId === null) {
+            newsEditorIdInput.classList.add('is-invalid');
+            newsEditorIdInput.classList.remove('is-valid');
+            isValid = false;
+        } else {
+            newsEditorIdInput.classList.remove('is-invalid');
+            newsEditorIdInput.classList.add('is-valid');
+        }
+
+        newsSubmitBtn.disabled = !isValid;
+    }
+
+    // Добавляем слушатели событий для всех полей
+    if (newsTitleInput) newsTitleInput.addEventListener('input', validateNewsForm);
+    if (newsContentInput) newsContentInput.addEventListener('input', validateNewsForm);
+    if (newsEditorIdInput) newsEditorIdInput.addEventListener('change', validateNewsForm);
+    
+    // Handle form submission
+    newsForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        validateNewsForm();
+        if (newsSubmitBtn.disabled) {
+            return;
+        }
+        
+        // Get form data
+        const formData = new FormData(newsForm);
+        const editorIdFromForm = formData.get('editorId');
+        
+        // Для авторизованных редакторов приоритетно используем localStorage
+        // Для админов берем значение из формы
+        const editorIdFromStorage = localStorage.getItem('editorId');
+        console.log('editorId from localStorage:', editorIdFromStorage);
+        const isEditorRole = editorIdFromStorage !== null;
+        const editorIdValue = isEditorRole ? editorIdFromStorage : editorIdFromForm;
+        
+        if (!editorIdValue || editorIdValue === '') {
+            console.error('EditorId is empty or null!');
+            alert('Please select an editor');
+            newsEditorIdInput.classList.add('is-invalid');
+            newsEditorIdInput.classList.remove('is-valid');
+            return;
+        }
+        
+        const editorIdNum = parseInt(editorIdValue);
+        if (isNaN(editorIdNum) || editorIdNum <= 0) {
+            console.error('Invalid editorId value:', editorIdValue);
+            alert('Please select a valid editor');
+            newsEditorIdInput.classList.add('is-invalid');
+            newsEditorIdInput.classList.remove('is-valid');
+            return;
+        }
+        
+        const data = {
+            title: formData.get('title'),
+            content: formData.get('content'),
+            editorId: editorIdNum
+        };
+        
+        // Debug: log data before sending
+        console.log('Submitting data:', data);
+        console.log('EditorId from form:', editorIdFromForm);
+        console.log('EditorId used (localStorage if editor role):', editorIdValue);
+        console.log('Stringified data:', JSON.stringify(data));
+        
+        try {
+            const response = await fetch('/api/v1.0/news', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response statusText:', response.statusText);
+            console.log('Response ok:', response.ok);
+            
+            if (!response.ok) {
+                try {
+                    const errorText = await response.text();
+                    console.error('Error response body:', errorText);
+                } catch (e) {
+                    console.error('Could not read error response body:', e);
+                }
+            }
+            
+            if (response.ok) {
+                let result = null;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        result = await response.json();
+                    } else {
+                        // Если ответ не JSON, читаем как текст
+                        const text = await response.text();
+                        console.log('Response is not JSON:', text);
+                        result = { message: 'News created successfully' };
+                    }
+                } catch (jsonError) {
+                    console.log('Failed to parse JSON response:', jsonError);
+                    // Если ответ пустой или невалидный, считаем успехом
+                    result = { message: 'News created successfully' };
+                }
+                console.log('News created successfully:', result);
+                
+                // Get editorId from localStorage for redirect
+                const editorIdFromStorage = localStorage.getItem('editorId');
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('newsModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Reload page with editorId filter
+                if (editorIdFromStorage) {
+                    window.location.href = '/news?editorId=' + editorIdFromStorage;
+                } else {
+                    window.location.href = '/news';
+                }
+            } else {
+                let errorData = null;
+                try {
+                    errorData = await response.json();
+                } catch (jsonError) {
+                    console.error('Failed to parse error JSON:', jsonError);
+                    try {
+                        const text = await response.text();
+                        console.error('Raw response text:', text);
+                        alert('Failed to create news: ' + response.statusText + ' (Status: ' + response.status + ')');
+                    } catch (textError) {
+                        console.error('Failed to read response text:', textError);
+                        alert('Failed to create news: Unknown error (Status: ' + response.status + ')');
+                    }
+                    return;
+                }
+                alert('Failed to create news: ' + (errorData.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('News creation error:', error);
+            alert('Failed to create news: ' + error.message);
+        }
+    });
+    
+    // Auto-fill Modified from Created
+    function updateModifiedFromCreated() {
+        const createdValue = newsCreatedInput.value;
+        if (createdValue && newsModifiedInput) {
+            newsModifiedInput.value = createdValue;
+        }
+    }
+
+    // Load editor names and update table
+    async function loadEditorNames() {
+        try {
+            // Получаем список редакторов из модального окна
+            const select = document.getElementById('newsEditorId');
+            if (!select) return;
+            
+            // Создаем массив из опций select (имена редакторов)
+            const editorNames = {};
+            const options = select.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.value !== '') {
+                    editorNames[option.value] = option.textContent;
+                }
+            });
+            
+            // Обновляем ячейки таблицы
+            const table = document.getElementById('dynamicTable');
+            if (table) {
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    // Найти ячейку с Editor ID (по порядку - 4-я ячейка, индекс 3)
+                    if (cells.length >= 4) {
+                        const editorIdCell = cells[3];
+                        const editorId = editorIdCell.textContent.trim();
+                        if (editorId && editorNames[editorId]) {
+                            editorIdCell.textContent = editorNames[editorId];
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading editor names:', error);
+        }
+    }
+
+    const newsModifiedInput = document.getElementById('newsModified');
+    if (newsCreatedInput) newsCreatedInput.addEventListener('input', updateModifiedFromCreated);
+    
+    // Auto-fill Editor from localStorage for authenticated editor
+    function autoFillEditorFromStorage() {
+        const editorIdFromStorage = localStorage.getItem('editorId');
+        const editorLoginFromStorage = localStorage.getItem('editorLogin');
+        
+        const newsEditorIdSelect = document.getElementById('newsEditorId');
+        if (!newsEditorIdSelect) return;
+        
+        if (editorIdFromStorage) {
+            // Set the editorId from localStorage
+            newsEditorIdSelect.value = editorIdFromStorage;
+            console.log('Auto-filled Editor ID from localStorage:', editorIdFromStorage);
+        } else if (editorLoginFromStorage) {
+            // If only editorLogin is available, try to find the editor ID from the dropdown
+            const options = newsEditorIdSelect.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.textContent.includes(editorLoginFromStorage)) {
+                    newsEditorIdSelect.value = option.value;
+                    console.log('Auto-filled Editor ID by login:', option.value);
+                }
+            });
+        }
+        
+        // Update validation after auto-fill
+        validateNewsForm();
+    }
+    
+    // Загружаем имена редакторов при загрузке страницы
+    window.addEventListener('load', function() {
+        loadEditorNames();
+        autoFillEditorFromStorage();
+    });
+</script>
+</body>
+</html>

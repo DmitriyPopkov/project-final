@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notices</title>
+</head>
+<body>
+<h1>Notices</h1>
+<a th:href="@{/notices/create}">Create New Notice</a>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Content</th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="notice : ${notices}">
+        <td th:text="${notice.id}">1</td>
+        <td th:text="${notice.content}">Content</td>
+        <td th:text="${notice.created}">2026-07-03</td>
+        <td th:text="${notice.modified}">2026-07-03</td>
+        <td>
+            <a th:href="@{/notices/{id}(id=${notice.id})}">View</a>
+            <a th:href="@{/notices/{id}/edit(id=${notice.id})}">Edit</a>
+            <form th:action="@{/notices/{id}/delete(id=${notice.id})}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</body>
+</html>

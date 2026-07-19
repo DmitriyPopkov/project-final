@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sticker Form</title>
+</head>
+<body>
+<h1 th:text="${sticker.id != null ? 'Edit Sticker' : 'Create New Sticker'}">Sticker Form</h1>
+
+<form th:action="${sticker.id != null ? '/stickers/' + sticker.id : '/stickers'}" 
+      th:object="${sticker}" method="post">
+    
+    <input type="hidden" th:if="${sticker.id != null}" th:field="*{id}" />
+    
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" th:field="*{name}" />
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="color">Text Color:</label>
+        <input type="color" id="color" th:field="*{color}" value="#000000" />
+    </div>
+    
+    <button type="submit">Save</button>
+</form>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+
+<a th:href="@{/stickers}">Back to list</a>
+</body>
+</html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LessonClient - Главная</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .custom-navbar {
+            padding: 10px;
+            font-size: 20px;
+            background-color: #638cab;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .custom-navbar .navbar-nav > li > a {
+            color: #333333;
+        }
+        .custom-navbar .navbar-nav > li:hover {
+            background-color: #e7e7e7;
+        }
+        .custom-navbar .navbar-nav > li:hover > a {
+            color: #555555;
+        }
+        .custom-navbar .dropdown-menu {
+            background-color: #f8f8f8;
+        }
+        .custom-navbar .dropdown-menu > li > a {
+            color: #333333;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-header {
+          background: linear-gradient(135deg, #667eea 50%, #764ba2 50%);
+          color: white;
+          border-radius: 15px 15px 0 0;
+          border: none;
+        }
+
+
+        .menu-btn {
+          width: 100%;
+          margin-bottom: 10px;
+          padding: 20px;
+          font-size: 18px;
+          font-weight: bold;
+          transition: all 0.3s ease;
+      }
+
+    </style>
+</head>
+
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom custom-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" th:if="${currentUserRole == null}">Меню</a>
+            <a class="navbar-brand" href="#" id="navbarUsername" th:if="${currentUserRole != null}" th:text="'Здравствуйте, ' + ${currentUserRole}">Здравствуйте, [логин]</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#homeModal">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">О нас</a></li>
+                    <li class="nav-item dropdown" id="servicesDropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Услуги</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/news}">Читать новости</a></li>
+                            <li id="registerNavItem"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Зарегистрироваться</a></li>
+                            <li id="logoutNavItem"><a class="dropdown-item" href="#" id="logoutLink">Выйти</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h1 class="mb-0">Блогер</h1>
+                        <p class="mb-0 opacity-75">Выберите раздел для управления</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="/editors" id="editorsLink" class="menu-btn editors-btn" th:if="${currentUserRoleName == 'ADMIN' or currentUserRoleName == 'EDITOR'}">
+                                    <i class="bi bi-person-badge"></i> Editors
+                                </a>
+                                <div class="menu-btn editors-btn disabled" th:if="${currentUserRoleName == 'USER'}">
+                                    <i class="bi bi-person-badge"></i> Editors
+                                </div>
+                               <!-- <div class="form-check" id="iamEditorContainer" th:if="${currentUserRoleName != null and currentUserRoleName == 'USER'}">
+                                    <input class="form-check-input" type="checkbox" id="iamEditor" value="true">
+                                    <label class="form-check-label" for="iamEditor">Я редактор</label>
+                                </div>
+                                <a href="/editors" id="editorProfileLink" class="menu-btn editor-profile-btn" style="display:none;">
+                                    <i class="bi bi-person-badge"></i> Editor-->
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a th:href="@{/news}" class="menu-btn news-btn">
+                                    <i class="bi bi-newspaper"></i> News
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a th:href="@{/notices}" class="menu-btn notices-btn">
+                                    <i class="bi bi-volume-up"></i> Notices
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a th:href="@{/stickers}" class="menu-btn stickers-btn">
+                                    <i class="bi bi-emoji-smile"></i> Stickers
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal Home Info -->
+<div class="modal fade" id="homeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Главная</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>В этом приложении Вы можете создавать новости, комментировать чужие новости, оставлять заметки.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal About Info -->
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">О нас</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Мы учимся в JAVARUSH PANTERA.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contact Info -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Имя:</strong> Попков Дмитрий</p>
+                <p><strong>Email:</strong> <a href="mailto:rutcha@rambler.ru">rutcha@rambler.ru</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Editor Authentication Modal (for editor login) -->
+<div class="modal fade" id="editorAuthModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Вход редактора</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Добро пожаловать! Пожалуйста, аутентифицируйтесь как редактор.</p>
+                <form id="editorAuthForm">
+                    <div class="mb-3">
+                        <label for="editorAuthLogin" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="editorAuthLogin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorAuthPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="editorAuthPassword" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                    </div>
+                </form>
+                <div class="mt-3 text-center">
+                    <p class="mb-0">Нет аккаунта? <a href="#" id="createNewEditorLink" class="text-decoration-none">Создать нового редактора</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Registration Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Регистрация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="registerUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerRole" class="form-label">Роль</label>
+                        <select class="form-select" id="registerRole" required>
+                            <option value="USER" selected>USER (регистрация нового пользователя)</option>
+                            <option value="EDITOR">EDITOR (регистрация с созданием редактора)</option>
+                        </select>
+                        <div class="form-text">Выберите роль для регистрации.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Editor Modal (for creating editor) -->
+<div class="modal fade" id="editorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Создание редактора</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editorForm">
+                    <div class="mb-3">
+                        <label for="editorLogin" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="editorLogin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="editorPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorFirstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="editorFirstname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorLastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="editorLastname" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Создать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// JavaScript for role-based UI and authentication
+let currentUser = null;
+let isEditorAuthenticated = false; // Независимая переменная для отслеживания статуса аутентификации редактора
+
+// Check if user is logged in on page load
+checkAuthStatus();
+
+function checkAuthStatus() {
+    // Сначала проверяем localStorage на наличие editorLogin - приоритет!
+    const editorLogin = localStorage.getItem('editorLogin');
+    if (editorLogin) {
+        // Пользователь аутентифицировался как редактор ранее
+        // Получаем профиль редактора по логину
+        fetch('/api/v1.0/auth/editor-profile?login=' + encodeURIComponent(editorLogin))
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Failed to get editor profile');
+            })
+            .then(profile => {
+                // Обновляем currentUser с данными профиля редактора
+                // Используем правильные имена полей (firstname/lastname)
+                currentUser = {
+                    username: editorLogin,
+                    role: 'EDITOR',
+                    firstName: profile.firstname,
+                    lastName: profile.lastname
+                };
+                // Сохраняем editorId в localStorage
+                if (profile.id) {
+                    localStorage.setItem('editorId', profile.id);
+                }
+                isEditorAuthenticated = true;
+                updateUIForAuthenticatedUser();
+            })
+            .catch(profileErr => {
+                console.log('Failed to get editor profile:', profileErr);
+                // Если не удалось получить профиль, проверяем через profile API
+                checkAuthStatusFallback();
+            });
+    } else {
+        checkAuthStatusFallback();
+    }
+}
+
+function checkAuthStatusFallback() {
+    // Проверяем статус пользователя через /api/v1.0/auth/profile
+    fetch('/api/v1.0/auth/profile')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Unauthorized');
+        })
+        .then(user => {
+            currentUser = user;
+            // Если есть editorId в localStorage, сохраняем его
+            const editorId = localStorage.getItem('editorId');
+            if (editorId) {
+                currentUser.editorId = editorId;
+            }
+            // Вычисляем роль пользователя
+            let userRole = currentUser.role;
+            if (userRole && userRole.startsWith('ROLE_')) {
+                userRole = userRole.substring(5);
+            }
+            // Если это редактор, запрашиваем профиль для получения имени и фамилии
+            if (userRole === 'EDITOR' || userRole === 'ROLE_EDITOR') {
+                const editorLogin = currentUser.username;
+                fetch('/api/v1.0/auth/editor-profile?login=' + encodeURIComponent(editorLogin))
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Failed to get editor profile');
+                    })
+                    .then(profile => {
+                        // Обновляем currentUser с данными профиля редактора
+                        currentUser.firstName = profile.firstname;
+                        currentUser.lastName = profile.lastname;
+                        // Сохраняем editorId в localStorage
+                        if (profile.id) {
+                            localStorage.setItem('editorId', profile.id);
+                        }
+                        // Устанавливаем isEditorAuthenticated = true для сохранения статуса между перезагрузками
+                        isEditorAuthenticated = true;
+                        updateUIForAuthenticatedUser();
+                    })
+                    .catch(profileErr => {
+                        console.log('Failed to get editor profile:', profileErr);
+                        updateUIForAuthenticatedUser();
+                    });
+            } else {
+                updateUIForAuthenticatedUser();
+            }
+        })
+        .catch(err => {
+            console.log('Not authenticated via profile API');
+            currentUser = null;
+            updateUIForGuest();
+        });
+}
+
+function updateUIForAuthenticatedUser() {
+    document.getElementById('registerNavItem').style.display = 'none';
+    document.getElementById('logoutNavItem').style.display = 'block';
+    
+    // Получаем профиль редактора если роль EDITOR или если есть логин в localStorage
+    let editorLogin = null;
+    let isEditor = false;
+    
+    // Проверяем роль пользователя
+    let userRole = null;
+    if (currentUser) {
+        userRole = currentUser.role;
+        // Нормализуем роль (убираем ROLE_ префикс для консистентности)
+        if (userRole && userRole.startsWith('ROLE_')) {
+            userRole = userRole.substring(5);
+        }
+        console.log('userRole:', userRole);
+    }
+    
+    // Если пользователь уже аутентифицирован как редактор через Spring Security
+    if (currentUser && (userRole === 'EDITOR' || userRole === 'ROLE_EDITOR')) {
+        editorLogin = currentUser.username;
+        isEditor = true;
+    } else if (localStorage.getItem('editorLogin')) {
+        // Если есть логин в localStorage, считаем пользователя редактором
+        // Проверяем, есть ли уcurrentUser данные профиля редактора
+        editorLogin = localStorage.getItem('editorLogin');
+        if (!currentUser.firstName || !currentUser.lastName) {
+            // Если в currentUser нет данных профиля, загружаем их из localStorage
+            // (но это уже должно быть сделано в checkAuthStatus)
+        }
+        isEditor = true;
+    } else if (currentUser && (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN' || userRole === 'USER' || userRole === 'ROLE_USER')) {
+        // ADMIN и USER не являются редакторами по умолчанию
+        isEditor = false;
+    }
+    
+    // Если пользователь аутентифицирован как редактор, показываем ссылку Editor
+    if (isEditor) {
+        isEditorAuthenticated = true;
+        const editorProfileLink = document.getElementById('editorProfileLink');
+        if (editorProfileLink) {
+            editorProfileLink.style.display = 'block';
+        }
+        
+        // Обновляем navbar с firstName + lastName для редактора
+        if (currentUser && currentUser.firstName && currentUser.lastName) {
+            const navbarUsername = document.getElementById('navbarUsername');
+            if (navbarUsername) {
+                navbarUsername.textContent = 'Здравствуйте, ' + currentUser.firstName + ' ' + currentUser.lastName;
+                console.log('Updated navbar with:', currentUser.firstName, currentUser.lastName);
+            }
+        }
+        console.log('Editor link is visible, isEditorAuthenticated =', isEditorAuthenticated);
+    } else {
+        isEditorAuthenticated = false;
+        const editorProfileLink = document.getElementById('editorProfileLink');
+        if (editorProfileLink) {
+            editorProfileLink.style.display = 'none';
+        }
+        // Если ADMIN, скрываем кнопку Editor
+        if (currentUser && (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN')) {
+            console.log('ADMIN detected - Editor button hidden');
+        }
+        console.log('Editor link is hidden, isEditorAuthenticated =', isEditorAuthenticated);
+    }
+    
+    // Показываем ссылку Editors
+    const editorsLink = document.getElementById('editorsLink');
+    const editorProfileLink = document.getElementById('editorProfileLink');
+    if (editorsLink) {
+        if (currentUser && (userRole === 'ADMIN' || userRole === 'EDITOR')) {
+            // ADMIN и EDITOR видят ссылку как активную
+            editorsLink.classList.remove('disabled');
+            // Скрываем кнопку Editor для ADMIN (он видит только ссылку Editors)
+            if (editorProfileLink && userRole === 'ADMIN') {
+                editorProfileLink.style.display = 'none';
+            }
+            // Добавляем обработчик клика для передачи editorLogin
+            editorsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Для ADMIN открываем страницу без параметра editorLogin, чтобы видеть всех редакторов
+                if (userRole === 'ADMIN') {
+                    window.location.href = '/editors';
+                } else if (userRole === 'EDITOR') {
+                    // Для EDITOR проверяем localStorage
+                    const editorLogin = localStorage.getItem('editorLogin');
+                    if (editorLogin) {
+                        window.location.href = '/editors?editorLogin=' + encodeURIComponent(editorLogin);
+                    } else {
+                        window.location.href = '/editors';
+                    }
+                }
+            });
+        } else if (isEditor) {
+            // Редактор, аутентифицированный через localStorage - активная ссылка
+            editorsLink.classList.remove('disabled');
+            // Показываем кнопку Editor для редактора
+            if (editorProfileLink) {
+                editorProfileLink.style.display = 'block';
+                // Добавляем обработчик клика для кнопки Editor
+                editorProfileLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const editorLogin = localStorage.getItem('editorLogin');
+                    if (editorLogin) {
+                        window.location.href = '/editors?editorLogin=' + encodeURIComponent(editorLogin);
+                    } else {
+                        window.location.href = '/editors';
+                    }
+                });
+            }
+        } else if (currentUser && userRole === 'USER') {
+            // USER видит ссылку как неактивную
+            editorsLink.classList.add('disabled');
+            // Скрываем кнопку Editor для USER
+            if (editorProfileLink) {
+                editorProfileLink.style.display = 'none';
+            }
+            // При клике на ссылку открываем модальное окно для аутентификации редактора
+            editorsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Открываем модальное окно для аутентификации редактора
+                const editorAuthModal = new bootstrap.Modal(document.getElementById('editorAuthModal'));
+                editorAuthModal.show();
+            });
+        }
+    }
+    
+    // Update logout link to actually log out
+    document.getElementById('logoutLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Скрываем кнопку Editor при выходе
+        const editorProfileLink = document.getElementById('editorProfileLink');
+        if (editorProfileLink) {
+            editorProfileLink.style.display = 'none';
+        }
+        logout();
+    });
+}
+
+function updateUIForGuest() {
+    document.getElementById('registerNavItem').style.display = 'block';
+    document.getElementById('logoutNavItem').style.display = 'none';
+}
+
+function logout() {
+    // Удаляем cookie editorId
+    document.cookie = "editorId=; path=/; max-age=0";
+    
+    // Используем POST запрос для выхода (Spring Security logout endpoint)
+    fetch('/logout', {
+        method: 'POST'
+    })
+    .then(() => {
+        currentUser = null;
+        localStorage.removeItem('editorLogin');
+        localStorage.removeItem('editorId');
+        isEditorAuthenticated = false; // Устанавливаем false при выходе
+        updateUIForGuest();
+        // Перенаправляем на страницу логина
+        window.location.href = '/login';
+    })
+    .catch(err => {
+        console.error('Logout error:', err);
+        // Если запрос не удался, перенаправляем на страницу логина
+        window.location.href = '/login';
+    });
+}
+
+// Handle registration form submission
+const registerForm = document.getElementById('registerForm');
+let createdEditorId = null; // Для хранения ID созданного редактора
+
+if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('registerUsername').value;
+        const password = document.getElementById('registerPassword').value;
+        const role = document.getElementById('registerRole').value;
+        
+        const registerData = {
+            username: username,
+            password: password,
+            confirmPassword: password,
+            role: role,
+            editorId: createdEditorId
+        };
+        
+        try {
+            const response = await fetch('/api/v1.0/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(registerData)
+            });
+            
+            if (response.ok) {
+                // Registration successful - user is now authenticated via Spring Security session
+                alert('Регистрация успешна! Вы вошли в систему.');
+                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                registerModal.hide();
+                createdEditorId = null; // Сброс ID
+                // Перезагрузка страницы для обновления UI
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert('Ошибка регистрации: ' + (errorData.message || 'Неизвестная ошибка'));
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('Ошибка регистрации: ' + error.message);
+        }
+    });
+}
+
+// Слушатель изменения выбора роли
+const registerRoleSelect = document.getElementById('registerRole');
+if (registerRoleSelect) {
+    registerRoleSelect.addEventListener('change', function() {
+        const selectedRole = this.value;
+        
+        if (selectedRole === 'EDITOR') {
+            // Закрываем модальное окно регистрации и показываем модальное окно для создания редактора
+            const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+            if (registerModal) {
+                registerModal.hide();
+            }
+            const editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
+            editorModal.show();
+        } else if (selectedRole === 'USER') {
+            // Сбрасываем ID редактора, если выбран USER
+            createdEditorId = null;
+            // Закрываем модальное окно создания редактора, если оно открыто
+            const editorModal = bootstrap.Modal.getInstance(document.getElementById('editorModal'));
+            if (editorModal) {
+                editorModal.hide();
+            }
+        }
+    });
+}
+
+// Handle editor form submission (for creating editor when registering as EDITOR)
+const editorForm = document.getElementById('editorForm');
+if (editorForm) {
+    editorForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const login = document.getElementById('editorLogin').value;
+        const password = document.getElementById('editorPassword').value;
+        const firstname = document.getElementById('editorFirstname').value;
+        const lastname = document.getElementById('editorLastname').value;
+        
+        const editorData = {
+            login: login,
+            password: password,
+            firstname: firstname,
+            lastname: lastname
+        };
+        
+        try {
+            const response = await fetch('/api/v1.0/editors', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editorData)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                alert('Editor created successfully with ID: ' + result.id);
+                
+                // Close modal and populate editorId in register form
+                const editorModal = bootstrap.Modal.getInstance(document.getElementById('editorModal'));
+                editorModal.hide();
+                createdEditorId = result.id; // Сохраняем ID в глобальную переменную
+            } else {
+                const errorData = await response.json();
+                alert('Failed to create editor: ' + (errorData.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Editor creation error:', error);
+            alert('Failed to create editor: ' + error.message);
+        }
+    });
+}
+
+// Handle editor authentication modal on page load
+const editorAuthForm = document.getElementById('editorAuthForm');
+const createNewEditorLink = document.getElementById('createNewEditorLink');
+const iamEditorCheckbox = document.getElementById('iamEditor');
+
+// Handle "Я редактор" checkbox
+if (iamEditorCheckbox) {
+    iamEditorCheckbox.addEventListener('change', function() {
+        if (this.checked && !localStorage.getItem('editorLogin')) {
+            // Открываем модальное окно вход редактора только если нет логина в localStorage
+            const editorAuthModal = new bootstrap.Modal(document.getElementById('editorAuthModal'));
+            editorAuthModal.show();
+        } else if (this.checked && localStorage.getItem('editorLogin')) {
+            // Редактор уже аутентифицирован, снимаем галочку
+            this.checked = false;
+        } else {
+            // Снимаем галочку - ссылка становится неактивной
+            const editorsLink = document.getElementById('editorsLink');
+            if (editorsLink && currentUser && currentUser.role === 'USER') {
+                editorsLink.classList.add('disabled');
+            }
+        }
+    });
+}
+
+if (editorAuthForm && createNewEditorLink) {
+    // Проверяем роль пользователя при загрузке страницы
+    fetch('/api/v1.0/auth/profile')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Unauthorized');
+        })
+        .then(user => {
+            // Если пользователь редактор или админ (но не обычный юзер), показываем ссылку Editors
+            if (user && (user.role === 'EDITOR' || user.role === 'ADMIN')) {
+                const editorsLink = document.getElementById('editorsLink');
+                if (editorsLink) {
+                    editorsLink.style.display = 'block';
+                }
+            }
+            
+            // Если пользователь редактор и не аутентифицирован через localStorage, открываем модальное окно
+            if (user && user.role === 'EDITOR' && !localStorage.getItem('editorLogin')) {
+                const editorAuthModalElement = document.getElementById('editorAuthModal');
+                const editorAuthModal = new bootstrap.Modal(editorAuthModalElement);
+                editorAuthModal.show();
+            }
+        })
+        .catch(err => {
+            console.log('Not authenticated or not editor role');
+        });
+    
+    // Handle editor auth form submission
+    editorAuthForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const login = document.getElementById('editorAuthLogin').value;
+        const password = document.getElementById('editorAuthPassword').value;
+        
+        try {
+            const response = await fetch('/api/v1.0/auth/login-editor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: login, password: password })
+            });
+            
+            if (response.ok) {
+                // Получаем ответ с профилем редактора
+                const responseData = await response.json();
+                
+                console.log('Editor login response:', responseData);
+                console.log('Editor ID from response:', responseData.editorId);
+                
+                // Сохраняем логин редактора и editorId для дальнейшего использования
+                localStorage.setItem('editorLogin', login);
+                if (responseData.editorId) {
+                    localStorage.setItem('editorId', responseData.editorId);
+                    console.log('Saved editorId to localStorage:', responseData.editorId);
+                } else {
+                    console.error('editorId is missing in response:', responseData);
+                }
+                isEditorAuthenticated = true; // Устанавливаем true при успешной аутентификации редактора
+                
+                // Обновляем currentUser с данными профиля редактора
+                // Используем правильные имена полей (firstName/lastName - camelCase)
+                currentUser = {
+                    username: login,
+                    role: 'EDITOR',
+                    firstName: responseData.firstName,
+                    lastName: responseData.lastName
+                };
+                
+                // Обновляем UI с firstName + lastName в navbar
+                updateUIForAuthenticatedUser();
+                
+                alert('Аутентификация успешна!\nДобро пожаловать, ' + (responseData.firstName || '') + ' ' + (responseData.lastName || ''));
+                const editorAuthModal = bootstrap.Modal.getInstance(document.getElementById('editorAuthModal'));
+                editorAuthModal.hide();
+                
+                // Скрываем галочку "Я редактор"
+                if (iamEditorCheckbox) {
+                    iamEditorCheckbox.checked = false;
+                }
+                const iamEditorContainer = document.getElementById('iamEditorContainer');
+                if (iamEditorContainer) {
+                    iamEditorContainer.style.display = 'none';
+                }
+                
+                // Делаем ссылку Editors активной
+                const editorsLink = document.getElementById('editorsLink');
+                if (editorsLink) {
+                    editorsLink.classList.remove('disabled');
+                }
+                
+                // Показываем кнопку Editor
+                const editorProfileLink = document.getElementById('editorProfileLink');
+                if (editorProfileLink) {
+                    editorProfileLink.style.display = 'block';
+                }
+            } else {
+                const errorData = await response.json();
+                alert('Ошибка аутентификации: ' + (errorData.message || 'Неизвестная ошибка'));
+            }
+        } catch (error) {
+            console.error('Editor authentication error:', error);
+            alert('Ошибка аутентификации: ' + error.message);
+        }
+    });
+    
+    // Handle "Create New Editor" link click
+    createNewEditorLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        const editorAuthModal = bootstrap.Modal.getInstance(document.getElementById('editorAuthModal'));
+        if (editorAuthModal) {
+            editorAuthModal.hide();
+        }
+        // Устанавливаем флаг для автоматического нажатия кнопки Create New Editor на странице editors
+        sessionStorage.setItem('autoCreateEditor', 'true');
+        // Открыть форму создания редактора в editors/list.html
+        window.location.href = '/editors';
+    });
+}
+</script>
+</body>
+
+</html>

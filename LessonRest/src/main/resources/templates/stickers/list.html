@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Stickers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-navbar {
+            padding: 10px;
+            font-size: 20px;
+            background-color: #638cab;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .custom-navbar .navbar-nav > li > a {
+            color: #333333;
+        }
+        .custom-navbar .navbar-nav > li:hover {
+            background-color: #e7e7e7;
+        }
+        .custom-navbar .navbar-nav > li:hover > a {
+            color: #555555;
+        }
+        .custom-navbar .dropdown-menu {
+            background-color: #f8f8f8;
+        }
+        .custom-navbar .dropdown-menu > li > a {
+            color: #333333;
+        }
+
+         body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #dynamicTable {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        #dynamicTable, #dynamicTable th, #dynamicTable td {
+            border: 2px solid #000000;
+        }
+        #dynamicTable th, #dynamicTable td {
+            padding: 8px;
+            text-align: left;
+        }
+        #dynamicTable th {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        #dynamicTable td {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom custom-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Меню</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная страница</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+<h1>Stickers</h1>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stickerModal" th:if="${currentUserRole == 'ADMIN'}">
+    Create New Sticker
+</button>
+
+<!--<form th:action="@{/stickers}" method="get" style="margin: 20px 0;">
+    <label for="name">Search by name:</label>
+    <input type="text" id="id" name="name" th:value="${searchName}" />
+    <button type="submit">Search</button>
+</form>-->
+
+    <table border="1",
+           id="dynamicTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <!--<th>Description</th>-->
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sticker : ${stickers}">
+        <td th:text="${sticker.id}">1</td>
+        <td th:text="${sticker.name}" th:style="'color: ' + ${sticker.color} ?: '#000000'">Name</td>
+       <!-- <td th:text="${sticker.description}">Description</td>-->
+        <td>
+            <a th:href="@{/news(stickerId=${sticker.id})}">View</a>
+            <button type="button" class="btn btn-sm btn-warning edit-sticker-btn" data-bs-toggle="modal" data-bs-target="#editStickerModal" th:data-id="${sticker.id}" th:data-name="${sticker.name}" th:data-color="${sticker.color}" th:if="${currentUserRole == 'ADMIN'}">Edit</button>
+            <button type="button" class="btn btn-sm btn-warning edit-sticker-btn" disabled data-bs-toggle="modal" data-bs-target="#editStickerModal" th:data-id="${sticker.id}" th:data-name="${sticker.name}" th:data-color="${sticker.color}" th:if="${currentUserRole != 'ADMIN'}">Edit</button>
+            <form th:action="@{/stickers/{id}/delete(id=${sticker.id})}" method="post" style="display:inline;" th:if="${currentUserRole == 'ADMIN'}">
+                <button type="submit">Delete</button>
+            </form>
+            <button type="button" class="btn btn-sm btn-danger" disabled th:if="${currentUserRole != 'ADMIN'}">Delete</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</main>
+<!-- Modal for Edit Sticker -->
+<div class="modal fade" id="editStickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Sticker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editStickerForm" method="post">
+                    <input type="hidden" id="editStickerId" name="id">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Name:</label>
+                        <input type="text" id="editName" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editColor" class="form-label">Text Color:</label>
+                        <input type="color" id="editColor" name="color" class="form-control form-control-color">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Write</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal for Create Sticker -->
+<div class="modal fade" id="stickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Sticker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/stickers}" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" required style="color: #000000;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="textColor" class="form-label">Text Color:</label>
+                        <input type="color" id="textColor" class="form-control form-control-color" value="#000000" title="Choose text color">
+                    </div>
+                    <input type="hidden" id="colorInput" name="color" value="#000000">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Contact Info -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Имя:</strong> Попков Дмитрий</p>
+                <p><strong>Email:</strong> <a href="mailto:rutcha@rambler.ru">rutcha@rambler.ru</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create Sticker Modal - Update text color when color picker changes
+        var createNameInput = document.getElementById('name');
+        var createColorPicker = document.getElementById('textColor');
+        var createHiddenColorInput = document.getElementById('colorInput');
+        
+        if (createNameInput && createColorPicker && createHiddenColorInput) {
+            createColorPicker.addEventListener('input', function() {
+                createNameInput.style.color = createColorPicker.value;
+                createHiddenColorInput.value = createColorPicker.value;
+            });
+            
+            createNameInput.style.color = createColorPicker.value;
+            createHiddenColorInput.value = createColorPicker.value;
+        }
+        
+        // Edit Sticker Modal - Populate fields when opening
+        var editStickerModal = document.getElementById('editStickerModal');
+        if (editStickerModal) {
+            editStickerModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var id = button.getAttribute('data-id');
+                var name = button.getAttribute('data-name');
+                var color = button.getAttribute('data-color');
+                
+                document.getElementById('editStickerId').value = id;
+                document.getElementById('editName').value = name;
+                document.getElementById('editColor').value = color;
+            });
+        }
+        
+        // Handle Edit Form Submission using fetch API
+        var editForm = document.getElementById('editStickerForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                var id = document.getElementById('editStickerId').value;
+                var name = document.getElementById('editName').value;
+                var color = document.getElementById('editColor').value;
+                
+                // Create form data
+                var formData = new FormData();
+                formData.append('name', name);
+                formData.append('color', color);
+                
+                // Submit via fetch
+                fetch('/stickers/' + id, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/stickers';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        }
+    });
+</script>
+</body>
+</html>

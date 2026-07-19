@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notice Form</title>
+</head>
+<body>
+<h1 th:text="${notice.id != null ? 'Edit Notice' : 'Create New Notice'}">Notice Form</h1>
+
+<form th:action="@{${notice.id != null ? '/notices/' + notice.id + '/edit' : '/notices/create'}}" 
+      th:object="${notice}" method="post">
+    
+    <input type="hidden" th:if="${notice.id != null}" th:field="*{id}" />
+    
+    <div>
+        <label for="content">Content:</label>
+        <textarea id="content" th:field="*{content}"></textarea>
+        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color: red;">Error</span>
+    </div>
+    
+    <button type="submit">Save</button>
+</form>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+
+<a th:href="@{/notices}">Back to list</a>
+</body>
+</html>

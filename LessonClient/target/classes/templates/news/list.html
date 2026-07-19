@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News</title>
+</head>
+<body>
+<h1>News</h1>
+<a th:href="@{/news/create}">Create New News</a>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Editor ID</th>
+        <th>Created</th>
+        <th>Modified</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="news : ${news}">
+        <td th:text="${news.id}">1</td>
+        <td th:text="${news.title}">Title</td>
+        <td th:text="${news.content}">Content</td>
+        <td th:text="${news.editorId}">1</td>
+        <td th:text="${news.created}">2026-07-03</td>
+        <td th:text="${news.modified}">2026-07-03</td>
+        <td>
+            <a th:href="@{/news/{id}(id=${news.id})}">View</a>
+            <!-- Кнопка Edit видна всегда, но неактивна для неавторов -->
+            <a th:if="${currentUserEditorId != null}" th:class="${news.editorId != currentUserEditorId} ? 'btn-disabled' : ''" th:href="@{/news/{id}/edit(id=${news.id})}" th:text="${news.editorId == currentUserEditorId} ? 'Edit' : 'Edit (No Access)'">Edit</a>
+            <!-- Кнопка Delete видна всегда, но неактивна для неавторов -->
+            <form th:if="${currentUserEditorId != null}" th:action="@{/news/{id}/delete(id=${news.id})}" method="post" style="display:inline;">
+                <button type="submit" th:disabled="${news.editorId != currentUserEditorId}" th:class="${news.editorId != currentUserEditorId} ? 'btn-disabled' : ''" th:text="${news.editorId == currentUserEditorId} ? 'Delete' : 'Delete (No Access)'">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</body>
+</html>

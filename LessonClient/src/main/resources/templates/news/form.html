@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News Form</title>
+</head>
+<body>
+<h1 th:text="${news.id != null ? 'Edit News' : 'Create New News'}">News Form</h1>
+
+<form th:action="@{${news.id != null ? '/news/' + news.id + '/edit' : '/news/create'}}" 
+      th:object="${news}" method="post">
+    
+    <input type="hidden" th:if="${news.id != null}" th:field="*{id}" />
+    
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" th:field="*{title}" />
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="content">Content:</label>
+        <textarea id="content" th:field="*{content}"></textarea>
+        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="editorId">Editor ID:</label>
+        <input type="number" id="editorId" th:field="*{editorId}" />
+        <span th:if="${#fields.hasErrors('editorId')}" th:errors="*{editorId}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="stickerIds">Sticker IDs (comma-separated):</label>
+        <input type="text" id="stickerIds" th:field="*{stickerIds}" placeholder="1,2,3" />
+        <span th:if="${#fields.hasErrors('stickerIds')}" th:errors="*{stickerIds}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="created">Created:</label>
+        <input type="datetime-local" id="created" th:field="*{created}" />
+        <span th:if="${#fields.hasErrors('created')}" th:errors="*{created}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="modified">Modified:</label>
+        <input type="datetime-local" id="modified" th:field="*{modified}" />
+        <span th:if="${#fields.hasErrors('modified')}" th:errors="*{modified}" style="color: red;">Error</span>
+    </div>
+    
+    <button type="submit">Save</button>
+</form>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+
+<a th:href="@{/news}">Back to list</a>
+</body>
+</html>

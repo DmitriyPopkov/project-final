@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Editors</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .custom-navbar {
+            padding: 10px;
+            font-size: 20px;
+            background-color: #638cab;
+            color: #333333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .custom-navbar .navbar-nav > li > a {
+            color: #333333;
+        }
+        .custom-navbar .navbar-nav > li:hover {
+            background-color: #e7e7e7;
+        }
+        .custom-navbar .navbar-nav > li:hover > a {
+            color: #555555;
+        }
+        .custom-navbar .dropdown-menu {
+            background-color: #f8f8f8;
+        }
+        .custom-navbar .dropdown-menu > li > a {
+            color: #333333;
+        }
+ body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+ #dynamicTable {
+ border-collapse: collapse;
+ width: 100%;
+ margin-bottom: 20px;
+ }
+ #dynamicTable, #dynamicTable th, #dynamicTable td {
+ border: 2px solid #000000;
+ }
+ #dynamicTable th, #dynamicTable td {
+ padding: 8px;
+ text-align: left;
+ }
+ #dynamicTable th {
+ background-color: #ffffff;
+ color: #000000;
+ }
+ #dynamicTable td {
+ background-color: #ffffff;
+ color: #000000;
+ }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom custom-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" th:if="${editorLogin != null}">Здравствуйте, <span class="editor-name" th:text="${editorFirstname} + ' ' + ${editorLastname}">Имя Фамилия</span></a>
+            <a class="navbar-brand" href="#" th:if="${editorLogin == null}">Меню</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Главная страница</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+<h1>Editors</h1>
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#editorModal" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN'or currentUserRole == 'EDITOR'}">
+    Create New Editor
+</button>
+<!-- Скрываем модальное окно создания редактора для пользователей (не админов и не редакторов) -->
+<div class="modal fade" id="editorModal" tabindex="-1" aria-hidden="true" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN' or currentUserRole == 'EDITOR' or currentUserRole == 'ROLE_EDITOR'}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Editor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/editors/create}" method="post">
+                    <div class="mb-3">
+                        <label for="login" class="form-label">Login</label>
+                        <input type="email" class="form-control" id="login" name="login" th:value="${editor?.login}" th:field="*{editor.login}" required>
+                        <div class="invalid-feedback">Please enter a valid email address</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="firstname" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" th:value="${editor?.firstname}" th:field="*{editor.firstname}" required>
+                        <div class="invalid-feedback">First Name cannot be empty (min 2 characters)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastname" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" th:value="${editor?.lastname}" th:field="*{editor.lastname}" required>
+                        <div class="invalid-feedback">Last Name cannot be empty (min 2 characters)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" th:field="*{editor.password}" required>
+                        <div class="invalid-feedback">Password must be at least 8 characters</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Записать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<table border="1",
+       id="dynamicTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Login</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="editor : ${editors}">
+        <td th:text="${editor.id}">1</td>
+        <td th:text="${editor.login}">login</td>
+        <td th:text="${editor.firstname}">First</td>
+        <td th:text="${editor.lastname}">Last</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-primary" th:onclick="editEditor([[${editor.id}]])" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN' or currentUserRole == 'EDITOR' or currentUserRole == 'ROLE_EDITOR'}">Edit</button>
+            <button type="button" class="btn btn-sm btn-primary" disabled th:if="${currentUserRole != 'ADMIN' and currentUserRole != 'ROLE_ADMIN' and currentUserRole != 'EDITOR' and currentUserRole != 'ROLE_EDITOR'}">Edit</button>
+            <form th:action="@{/editors/{id}/delete(id=${editor.id})}" method="post" style="display:inline;" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN' or currentUserRole == 'EDITOR' or currentUserRole == 'ROLE_EDITOR'}">
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+            <button type="button" class="btn btn-sm btn-danger" disabled th:if="${currentUserRole != 'ADMIN' and currentUserRole != 'ROLE_ADMIN' and currentUserRole != 'EDITOR' and currentUserRole != 'ROLE_EDITOR'}">Delete</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</main>
+<!-- Modal Edit Editor -->
+<div class="modal fade" id="editEditorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Editor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" th:action="@{/editors/}" method="post">
+                    <input type="hidden" id="editId" name="id">
+                    <div class="mb-3">
+                        <label for="editLogin" class="form-label">Login</label>
+                        <input type="email" class="form-control" id="editLogin" name="login" required>
+                        <div class="invalid-feedback">Please enter a valid email address</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFirstname" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="editFirstname" name="firstname" required>
+                        <div class="invalid-feedback">First Name cannot be empty (min 2 characters)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastname" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="editLastname" name="lastname" required>
+                        <div class="invalid-feedback">Last Name cannot be empty (min 2 characters)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPassword" class="form-label">Password (оставьте пустым, чтобы не менять)</label>
+                        <input type="password" class="form-control" id="editPassword" name="password">
+                        <div class="form-text">Введите новый пароль минимум 8 символов или оставьте пустым</div>
+                        <div class="invalid-feedback">Password must be at least 8 characters</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary" id="editSubmitBtn" disabled>Записать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Contact Info -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Имя:</strong> Попков Дмитрий</p>
+                <p><strong>Email:</strong> <a href="mailto:rutcha@rambler.ru">rutcha@rambler.ru</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let currentEditorId = null;
+
+    function editEditor(id) {
+        currentEditorId = id;
+        fetch('/api/v1.0/editors/' + id)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editId').value = data.id;
+                document.getElementById('editLogin').value = data.login;
+                document.getElementById('editFirstname').value = data.firstname;
+                document.getElementById('editLastname').value = data.lastname;
+                document.getElementById('editPassword').value = '';
+                
+                const editForm = document.getElementById('editForm');
+                const editSubmitBtn = document.getElementById('editSubmitBtn');
+                const editLoginInput = document.getElementById('editLogin');
+                const editFirstnameInput = document.getElementById('editFirstname');
+                const editLastnameInput = document.getElementById('editLastname');
+                const editPasswordInput = document.getElementById('editPassword');
+
+                function validateEditForm() {
+                    const login = editLoginInput.value.trim();
+                    const firstname = editFirstnameInput.value.trim();
+                    const lastname = editLastnameInput.value.trim();
+                    const password = editPasswordInput.value.trim();
+
+                    let isValid = true;
+
+                    // Валидация Email Login
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(login)) {
+                        editLoginInput.classList.add('is-invalid');
+                        editLoginInput.classList.remove('is-valid');
+                        isValid = false;
+                    } else {
+                        editLoginInput.classList.remove('is-invalid');
+                        editLoginInput.classList.add('is-valid');
+                    }
+
+                    // Валидация First Name (2-50 символов)
+                    if (firstname.length < 2) {
+                        editFirstnameInput.classList.add('is-invalid');
+                        editFirstnameInput.classList.remove('is-valid');
+                        isValid = false;
+                    } else {
+                        editFirstnameInput.classList.remove('is-invalid');
+                        editFirstnameInput.classList.add('is-valid');
+                    }
+
+                    // Валидация Last Name (2-50 символов)
+                    if (lastname.length < 2) {
+                        editLastnameInput.classList.add('is-invalid');
+                        editLastnameInput.classList.remove('is-valid');
+                        isValid = false;
+                    } else {
+                        editLastnameInput.classList.remove('is-invalid');
+                        editLastnameInput.classList.add('is-valid');
+                    }
+
+                    // Валидация Password (только если вводится новый)
+                    if (password.length > 0 && password.length < 8) {
+                        editPasswordInput.classList.add('is-invalid');
+                        editPasswordInput.classList.remove('is-valid');
+                        isValid = false;
+                    } else if (password.length >= 8) {
+                        editPasswordInput.classList.remove('is-invalid');
+                        editPasswordInput.classList.add('is-valid');
+                    } else {
+                        // Пароль пустой - оставляем старый
+                        editPasswordInput.classList.remove('is-invalid');
+                        editPasswordInput.classList.add('is-valid');
+                    }
+
+                    editSubmitBtn.disabled = !isValid;
+                }
+
+                // Инициализация валидации
+                editLoginInput.addEventListener('input', validateEditForm);
+                editFirstnameInput.addEventListener('input', validateEditForm);
+                editLastnameInput.addEventListener('input', validateEditForm);
+                editPasswordInput.addEventListener('input', validateEditForm);
+                validateEditForm();
+
+                editForm.addEventListener('submit', function(e) {
+                    validateEditForm();
+                    if (editSubmitBtn.disabled) {
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    // Отправка PUT запроса через fetch API
+                    const editorData = {
+                        login: editLoginInput.value.trim(),
+                        firstname: editFirstnameInput.value.trim(),
+                        lastname: editLastnameInput.value.trim()
+                    };
+                    
+                    // Добавляем пароль только если он не пустой
+                    const passwordValue = editPasswordInput.value.trim();
+                    if (passwordValue.length > 0) {
+                        editorData.password = passwordValue;
+                    }
+                    
+                    fetch('/api/v1.0/editors/' + currentEditorId, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(editorData)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = '/editors';
+                        } else {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Update failed');
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating editor:', error);
+                        alert('Ошибка при обновлении: ' + error.message);
+                    });
+                    
+                    e.preventDefault();
+                });
+
+                const editModalElement = document.getElementById('editEditorModal');
+                const editModal = new bootstrap.Modal(editModalElement);
+                editModal.show();
+            })
+            .catch(error => {
+                console.error('Error fetching editor:', error);
+                alert('Ошибка при загрузке данных редактора');
+            });
+    }
+</script>
+
+<script>
+    // Валидация пароля и управление кнопкой отправки для модального окна создания
+    let loginInput, firstnameInput, lastnameInput, passwordInput;
+    let submitBtn, form;
+
+    // Функция валидации формы
+    function validateForm() {
+        const login = loginInput ? loginInput.value.trim() : '';
+        const firstname = firstnameInput ? firstnameInput.value.trim() : '';
+        const lastname = lastnameInput ? lastnameInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value.trim() : '';
+
+        let isValid = true;
+
+        // Валидация Email Login
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (loginInput) {
+            if (!emailRegex.test(login)) {
+                loginInput.classList.add('is-invalid');
+                loginInput.classList.remove('is-valid');
+                isValid = false;
+            } else {
+                loginInput.classList.remove('is-invalid');
+                loginInput.classList.add('is-valid');
+            }
+        }
+
+        // Валидация First Name (2-50 символов)
+        if (firstnameInput) {
+            if (firstname.length < 2) {
+                firstnameInput.classList.add('is-invalid');
+                firstnameInput.classList.remove('is-valid');
+                isValid = false;
+            } else {
+                firstnameInput.classList.remove('is-invalid');
+                firstnameInput.classList.add('is-valid');
+            }
+        }
+
+        // Валидация Last Name (2-50 символов)
+        if (lastnameInput) {
+            if (lastname.length < 2) {
+                lastnameInput.classList.add('is-invalid');
+                lastnameInput.classList.remove('is-valid');
+                isValid = false;
+            } else {
+                lastnameInput.classList.remove('is-invalid');
+                lastnameInput.classList.add('is-valid');
+            }
+        }
+
+        // Валидация Password (8-128 символов)
+        if (passwordInput) {
+            if (password.length < 8) {
+                passwordInput.classList.add('is-invalid');
+                passwordInput.classList.remove('is-valid');
+                isValid = false;
+            } else {
+                passwordInput.classList.remove('is-invalid');
+                passwordInput.classList.add('is-valid');
+            }
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = !isValid;
+        }
+    }
+
+    // Добавляем слушатели событий для всех полей
+    function addInputListeners() {
+        // Удаляем старые слушатели (если есть)
+        if (loginInput) {
+            const newLoginInput = document.getElementById('login');
+            if (newLoginInput && newLoginInput !== loginInput) {
+                loginInput = newLoginInput;
+            }
+        } else {
+            loginInput = document.getElementById('login');
+        }
+        if (firstnameInput) {
+            const newFirstnameInput = document.getElementById('firstname');
+            if (newFirstnameInput && newFirstnameInput !== firstnameInput) {
+                firstnameInput = newFirstnameInput;
+            }
+        } else {
+            firstnameInput = document.getElementById('firstname');
+        }
+        if (lastnameInput) {
+            const newLastnameInput = document.getElementById('lastname');
+            if (newLastnameInput && newLastnameInput !== lastnameInput) {
+                lastnameInput = newLastnameInput;
+            }
+        } else {
+            lastnameInput = document.getElementById('lastname');
+        }
+        if (passwordInput) {
+            const newPasswordInput = document.getElementById('password');
+            if (newPasswordInput && newPasswordInput !== passwordInput) {
+                passwordInput = newPasswordInput;
+            }
+        } else {
+            passwordInput = document.getElementById('password');
+        }
+        submitBtn = document.getElementById('submitBtn');
+        form = passwordInput ? passwordInput.closest('form') : null;
+
+        // Удаляем старые слушатели и добавляем новые
+        if (loginInput) {
+            loginInput.removeEventListener('input', validateForm);
+            loginInput.addEventListener('input', validateForm);
+        }
+        if (firstnameInput) {
+            firstnameInput.removeEventListener('input', validateForm);
+            firstnameInput.addEventListener('input', validateForm);
+        }
+        if (lastnameInput) {
+            lastnameInput.removeEventListener('input', validateForm);
+            lastnameInput.addEventListener('input', validateForm);
+        }
+        if (passwordInput) {
+            passwordInput.removeEventListener('input', validateForm);
+            passwordInput.addEventListener('input', validateForm);
+        }
+
+        // Валидация при каждом вводе
+        if (form) {
+            form.removeEventListener('submit', null);
+            form.addEventListener('submit', function(e) {
+                validateForm();
+                if (submitBtn.disabled) {
+                    e.preventDefault();
+                }
+
+
+                // Если форма валидна и кнопка активна, показываем alert и перенаправляем после успешного создания
+                else {
+                    setTimeout(function() {
+                        alert('Регистрация успешна! Войдите со своими учетными данными.');
+                        window.location.href = '/login';
+
+                    }, 1);
+                }
+            });
+        }
+    }
+
+    // Добавляем слушатели только после открытия модального окна
+    const editorModalElement = document.getElementById('editorModal');
+    if (editorModalElement) {
+        editorModalElement.addEventListener('shown.bs.modal', function () {
+            addInputListeners();
+            // Валидируем сразу после открытия
+            validateForm();
+        });
+    }
+</script>
+</body>
+</html>

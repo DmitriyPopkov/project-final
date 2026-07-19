@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editors</title>
+</head>
+<body>
+<h1>Editors</h1>
+<a th:href="@{/editors/create}">Create New Editor</a>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Login</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="editor : ${editors}">
+        <td th:text="${editor.id}">1</td>
+        <td th:text="${editor.login}">login</td>
+        <td th:text="${editor.firstname}">First</td>
+        <td th:text="${editor.lastname}">Last</td>
+        <td>
+            <a th:href="@{/editors/{id}/edit(id=${editor.id})}">Edit</a>
+            <form th:action="@{/editors/{id}/delete(id=${editor.id})}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</body>
+</html>

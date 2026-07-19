@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Stickers</title>
+</head>
+<body>
+<h1>Stickers</h1>
+<a th:href="@{/stickers/create}">Create New Sticker</a>
+
+<form th:action="@{/stickers}" method="get" style="margin: 20px 0;">
+    <label for="name">Search by name:</label>
+    <input type="text" id="name" name="name" th:value="${searchName}" />
+    <button type="submit">Search</button>
+</form>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sticker : ${stickers}">
+        <td th:text="${sticker.id}">1</td>
+        <td th:text="${sticker.name}">Name</td>
+        <td th:text="${sticker.description}">Description</td>
+        <td>
+            <a th:href="@{/stickers/{id}(id=${sticker.id})}">View</a>
+            <a th:href="@{/stickers/{id}/edit(id=${sticker.id})}">Edit</a>
+            <form th:action="@{/stickers/{id}/delete(id=${sticker.id})}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+</body>
+</html>

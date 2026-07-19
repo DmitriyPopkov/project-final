@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor Form</title>
+</head>
+<body>
+<h1 th:text="${editor.id != null ? 'Edit Editor' : 'Create New Editor'}">Editor Form</h1>
+
+<form th:action="@{${editor.id != null ? '/editors/' + editor.id + '/edit' : '/editors/create'}}" 
+      th:object="${editor}" method="post">
+    
+    <input type="hidden" th:if="${editor.id != null}" th:field="*{id}" />
+    
+    <div>
+        <label for="login">Login:</label>
+        <input type="text" id="login" th:field="*{login}" />
+        <span th:if="${#fields.hasErrors('login')}" th:errors="*{login}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="firstname">First Name:</label>
+        <input type="text" id="firstname" th:field="*{firstname}" />
+        <span th:if="${#fields.hasErrors('firstname')}" th:errors="*{firstname}" style="color: red;">Error</span>
+    </div>
+    
+    <div>
+        <label for="lastname">Last Name:</label>
+        <input type="text" id="lastname" th:field="*{lastname}" />
+        <span th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}" style="color: red;">Error</span>
+    </div>
+    
+    <button type="submit">Save</button>
+</form>
+
+<div th:if="${success}" style="color: green;">
+    <p th:text="${message}">Success message</p>
+</div>
+<div th:if="${error}" style="color: red;">
+    <p th:text="${error}">Error message</p>
+</div>
+
+<a th:href="@{/editors}">Back to list</a>
+</body>
+</html>

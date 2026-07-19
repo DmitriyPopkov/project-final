@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LessonClient - Вход</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .custom-navbar {
+           padding: 10px;
+           font-size: 20px;
+           background-color: #638cab;
+           color: #333333;
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+           border-radius: 5px;
+       }
+       .custom-navbar .navbar-nav > li > a {
+           color: #333333;
+       }
+       .custom-navbar .navbar-nav > li:hover {
+           background-color: #e7e7e7;
+       }
+       .custom-navbar .navbar-nav > li:hover > a {
+           color: #555555;
+       }
+       .custom-navbar .dropdown-menu {
+           background-color: #f8f8f8;
+       }
+       .custom-navbar .dropdown-menu > li > a {
+           color: #333333;
+       }
+       body {
+           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+           height: 100vh;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+       }
+
+       .login-card {
+           border-radius: 15px;
+           box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+       }
+
+       .login-header {
+           background: linear-gradient(135deg, #667eea 50%, #764ba2 50%);
+           color: white;
+           border-radius: 15px 15px 0 0;
+           border: none;
+       }
+
+       .form-control {
+           border-radius: 8px;
+       }
+
+       .btn-primary {
+           background: linear-gradient(135deg, #667eea 50%, #764ba2 50%);
+           border: none;
+           border-radius: 8px;
+           padding: 10px;
+       }
+
+       .btn-primary:hover {
+           background: linear-gradient(135deg, #5a6fd6 50%, #6a3d8a 50%);
+       }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card login-card">
+                    <div class="login-header text-center">
+                        <h3 class="mb-0">Вход в систему</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                            Неверное имя пользователя или пароль
+                        </div>
+                        <div th:if="${param.logout}" class="alert alert-success" role="alert">
+                            Вы успешно вышли из системы
+                        </div>
+
+                        <form th:action="@{/login}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Логин</label>
+                                <input type="text" class="form-control" id="username" name="username" required autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                 <input type="checkbox" class="form-check-input" id="editorLoginchek" name="editorLogin">
+                                 <label class="form-check-label" for="editorLogin">Я редактор</label>
+                             </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Войти</button>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <p class="mb-0">Нет аккаунта? <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#registerModal">Зарегистрироваться как пользователь</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Modal Home Info -->
+<div class="modal fade" id="homeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Главная</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>В этом приложении Вы можете создавать новости, комментировать чужие новости, оставлять заметки.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal About Info -->
+<div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">О нас</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Мы учимся в JAVARUSH PANTERA.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contact Info -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Контакты</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Имя:</strong> Попков Дмитрий</p>
+                <p><strong>Email:</strong> <a href="mailto:rutcha@rambler.ru">rutcha@rambler.ru</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Registration Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Регистрация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="registerUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerRole" class="form-label">Роль</label>
+                        <select class="form-select" id="registerRole" required disabled>
+                            <option value="USER" selected>USER (регистрация нового пользователя)</option>
+                        </select>
+                        <div class="form-text">Выберите роль для регистрации.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Creating Editor when registering as EDITOR -->
+<div class="modal fade" id="editorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Создание редактора</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editorForm">
+                    <div class="mb-3">
+                        <label for="editorLogin" class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="editorLogin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="editorPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorFirstname" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="editorFirstname" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editorLastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="editorLastname" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Создать редактора</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Обработчик галочки "Я редактор" в login.html
+    const editorLoginCheckbox = document.getElementById('editorLoginchek');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    if (editorLoginCheckbox && usernameInput && passwordInput) {
+        editorLoginCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Автоматически заполняем логин и пароль для редактора
+                usernameInput.value = 'editor';
+                passwordInput.value = 'editor';
+                console.log('Галочка "Я редактор" установлена, логин и пароль автоматически заполнены');
+            } else {
+                // Очищаем поля при снятии галочки
+                usernameInput.value = '';
+                passwordInput.value = '';
+                console.log('Галочка "Я редактор" снята, поля очищены');
+            }
+        });
+    }
+
+    // Обработчик формы регистрации (регистрация нового USER)
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            const registerData = {
+                username: username,
+                password: password,
+                confirmPassword: password,
+                role: role,
+                editorId: null
+            };
+            
+            console.log('Submitting registration data:', registerData);
+            
+            try {
+                const response = await fetch('/api/v1.0/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registerData)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    // Registration successful - user is now authenticated
+                    alert('Регистрация успешна! Войдите со своими учетными данными.');
+                    const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    if (registerModal) {
+                        registerModal.hide();
+                    }
+                    // Перезагрузка страницы для обновления UI
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert('Ошибка регистрации: ' + (errorData.message || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        });
+    }
+
+    // Слушатель изменения выбора роли
+    const registerRoleSelect = document.getElementById('registerRole');
+    if (registerRoleSelect) {
+        registerRoleSelect.addEventListener('change', function() {
+            const selectedRole = this.value;
+            
+            if (selectedRole === 'EDITOR') {
+                // Закрываем модальное окно регистрации и показываем модальное окно для создания редактора
+                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                if (registerModal) {
+                    registerModal.hide();
+                }
+                const editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
+                editorModal.show();
+            }
+        });
+    }
+
+    // Handle editor form submission (for creating editor when registering as EDITOR)
+    const editorForm = document.getElementById('editorForm');
+    if (editorForm) {
+        editorForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const login = document.getElementById('editorLogin').value;
+            const password = document.getElementById('editorPassword').value;
+            const firstname = document.getElementById('editorFirstname').value;
+            const lastname = document.getElementById('editorLastname').value;
+            
+            const editorData = {
+                login: login,
+                password: password,
+                firstname: firstname,
+                lastname: lastname
+            };
+            
+            try {
+                const response = await fetch('/api/v1.0/editors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(editorData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert('Editor created successfully with ID: ' + result.id);
+                    
+                    // Close modal and switch role to EDITOR in register form
+                    const editorModal = bootstrap.Modal.getInstance(document.getElementById('editorModal'));
+                    if (editorModal) {
+                        editorModal.hide();
+                    }
+                    
+                    // Switch role to EDITOR in register form
+                    if (registerRoleSelect) {
+                        registerRoleSelect.value = 'EDITOR';
+                    }
+                    
+                    // Show register modal again with EDITOR role selected
+                    const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+                    registerModal.show();
+                } else {
+                    const errorData = await response.json();
+                    alert('Failed to create editor: ' + (errorData.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Editor creation error:', error);
+                alert('Failed to create editor: ' + error.message);
+            }
+        });
+    }
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

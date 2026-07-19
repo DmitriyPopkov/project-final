@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notice Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:text="${notice.id != null ? 'Edit Notice' : 'Create New Notice'}">Notice Form</h1>
+    
+    <form th:action="@{${notice.id != null ? '/notices/' + notice.id + '/edit' : '/notices/create'}}" 
+          th:object="${notice}" method="post">
+        
+        <input type="hidden" th:if="${notice.id != null}" th:field="*{id}" />
+        
+        <div class="mb-3">
+            <label for="content" class="form-label">Content:</label>
+            <textarea id="content" th:field="*{content}" class="form-control" rows="5"></textarea>
+            <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color: red;">Error</span>
+        </div>
+        
+        <div class="mb-3">
+            <label for="newsId" class="form-label">News:</label>
+            <select id="newsId" name="newsId" class="form-select">
+                <option value="">Select news...</option>
+                <option th:each="news : ${newsList}"
+                        th:value="${news.id}"
+                        th:text="${news.title}"
+                        th:selected="${notice.news != null and news.id == notice.news.id}"></option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    
+    <div th:if="${success}" style="color: green;">
+        <p th:text="${message}">Success message</p>
+    </div>
+    <div th:if="${error}" style="color: red;">
+        <p th:text="${error}">Error message</p>
+    </div>
+    
+    <a th:href="@{/notices}" class="btn btn-secondary">Back to list</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

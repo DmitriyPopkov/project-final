@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    body {
+           background: linear-gradient(40deg, #667eea 10%, #b64ba2 50%);
+       }
+       </style>
+<body>
+<h1 th:text="${news.title}">News Title</h1>
+
+<!--<p><strong>ID:</strong> <span th:text="${news.id}">1</span></p>-->
+<p><strong>Title:</strong> <span th:text="${news.title}">Title</span></p>
+<p><strong>Content:</strong> <span th:text="${news.content}" style="font-size: 20px; font-weight: bold; color:#33ffff;">Content</span></p>
+<p><strong>Editor:</strong> <span th:text="${editorName != null ? editorName : 'N/A'}">Editor Name</span></p>
+<p><strong>Created:</strong> <span th:text="${news.created}">2026-07-03</span></p>
+<p><strong>Modified:</strong> <span th:text="${news.modified}">2026-07-03</span></p>
+
+<div class="mb-3">
+   <label for="stickerSelect" class="form-label">Отметить как:</label>
+   <select id="stickerSelect" class="form-select" style="width: auto;">
+       <option value="">Выберите стикер...</option>
+       <option th:each="sticker : ${allStickers}"
+               th:value="${sticker.id}"
+               th:text="${sticker.name}"
+               th:style="'color: ' + ${sticker.color} ?: '#000000'">
+       </option>
+   </select>
+   <button type="button" class="btn btn-primary mt-2" id="addStickerBtn">Добавить</button>
+</div>
+
+<h2>Stickers</h2>
+<ul th:each="sticker : ${stickers}">
+   <li th:text="${sticker.name}" th:style="'color: ' + ${sticker.color} ?: '#000000'">Sticker name</li>
+</ul>
+
+<h2>Notices</h2>
+<ul th:each="notice : ${notices}">
+   <li th:text="${notice.content}">Notice content</li>
+</ul>
+
+<!--<a th:href="@{/notices(openModal='true')}" class="btn btn-info mt-3" id="commentLink">Комментировать</a>-->
+
+<a th:href="@{/news}" style="color: blue; font-size: 20px;">Back to News</a>
+<a th:href="@{/notices/create(openModal='true', newsId=${news.id})}" style="color: blue; font-size: 17px; margin-left: 10px;">Комментировать</a>
+
+<!-- Edit/Delete buttons - only for ADMIN or news author (EDITOR) -->
+<div th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and news.editorId == currentUserEditorId)}" style="margin-top: 10px;">
+    <a th:href="@{/news/{id}/edit(id=${news.id})}" style="color: blue; font-size: 17px; margin-left: 10px;" class="btn btn-sm btn-warning">Редактировать</a>
+    <form th:action="@{/news/{id}/delete(id=${news.id})}" method="post" style="display:inline; margin-left: 10px;">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this news?');">Удалить</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+   document.addEventListener('DOMContentLoaded', function() {
+       var addStickerBtn = document.getElementById('addStickerBtn');
+       var stickerSelect = document.getElementById('stickerSelect');
+       var newsId = [[${news.id}]];
+
+       if (addStickerBtn && stickerSelect) {
+           addStickerBtn.addEventListener('click', function() {
+               var stickerId = stickerSelect.value;
+               if (stickerId) {
+                   // Add sticker to news via AJAX
+                   fetch('/news/' + newsId + '/stickers/' + stickerId, {
+                       method: 'POST'
+                   })
+                   .then(response => {
+                       if (response.ok) {
+                           // Reload page to show updated stickers
+                           window.location.reload();
+                       }
+                   })
+                   .catch(error => {
+                       console.error('Error adding sticker:', error);
+                   });
+               }
+           });
+       }
+   });
+</script>
+</body>
+</html>

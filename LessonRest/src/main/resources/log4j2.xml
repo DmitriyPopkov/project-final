@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_FILE">app.log</Property>
+        <Property name="LOG_ERROR_FILE">app_error.log</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </Console>
+
+        <!-- File Appender for Info and above -->
+        <RollingFile name="FileInfo" fileName="${LOG_FILE}" filePattern="app-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+
+        <!-- File Appender for Errors only -->
+        <RollingFile name="FileError" fileName="${LOG_ERROR_FILE}" filePattern="app_error-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Application Logger -->
+        <Logger name="com.example.LessonRest" level="INFO" additivity="false">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="FileInfo" />
+            <AppenderRef ref="FileError" />
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="INFO">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="FileInfo" />
+            <AppenderRef ref="FileError" />
+        </Root>
+    </Loggers>
+</Configuration>

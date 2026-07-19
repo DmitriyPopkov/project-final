@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News Detail</title>
+</head>
+<body>
+<h1 th:text="${news.title}">News Title</h1>
+
+<p><strong>ID:</strong> <span th:text="${news.id}">1</span></p>
+<p><strong>Title:</strong> <span th:text="${news.title}">Title</span></p>
+<p><strong>Content:</strong> <span th:text="${news.content}">Content</span></p>
+<p><strong>Editor ID:</strong> <span th:text="${news.editorId}">1</span></p>
+<p><strong>Created:</strong> <span th:text="${news.created}">2026-07-03</span></p>
+<p><strong>Modified:</strong> <span th:text="${news.modified}">2026-07-03</span></p>
+
+<h2>Stickers</h2>
+<ul th:each="sticker : ${stickers}">
+    <li th:text="${sticker.name}">Sticker name</li>
+</ul>
+
+<h2>Notices</h2>
+<ul th:each="notice : ${notices}">
+    <li th:text="${notice.content}">Notice content</li>
+</ul>
+
+<!-- Кнопки редактирования и удаления доступны только автору новости -->
+<div th:if="${currentUserEditorId != null and news.editorId == currentUserEditorId}">
+    <a th:href="@{/news/{id}/edit(id=${news.id})}">Edit</a>
+    <form th:action="@{/news/{id}/delete(id=${news.id})}" method="post" style="display:inline;">
+        <button type="submit">Delete</button>
+    </form>
+</div>
+
+<a th:href="@{/news}">Back to list</a>
+</body>
+</html>
