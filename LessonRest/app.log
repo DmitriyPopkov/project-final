@@ -2043,3 +2043,9 @@ org.springframework.web.bind.MethodArgumentNotValidException: Validation failed 
 2026-07-18 18:25:34.070 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'rutcha@rambler.ru' (Дмитрий Попков) created successfully!
 2026-07-18 18:25:34.075 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'editor' already exists.
 2026-07-18 18:25:34.076 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'rutcha@rambler.ru' (Дмитрий Попков) already exists.
+2026-07-19 19:43:54.239 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'editor' already exists.
+2026-07-19 19:43:54.243 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'rutcha@rambler.ru' (Дмитрий Попков) created successfully!
+2026-07-19 19:43:54.255 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'editor' created successfully!
+2026-07-19 19:43:54.255 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'rutcha@rambler.ru' (Дмитрий Попков) created successfully!
+2026-07-19 19:43:54.257 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'editor' already exists.
+2026-07-19 19:43:54.258 [main] INFO  com.example.LessonRest.initializer.EditorDataInitializer - Editor 'rutcha@rambler.ru' (Дмитрий Попков) already exists.

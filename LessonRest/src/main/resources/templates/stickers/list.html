@@ -75,7 +75,7 @@
 </header>
 <main>
 <h1>Stickers</h1>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stickerModal" th:if="${currentUserRole == 'ADMIN'}">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#stickerModal" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN'or currentUserRole == 'EDITOR' or currentUserRole == 'USER' }">
     Create New Sticker
 </button>
 

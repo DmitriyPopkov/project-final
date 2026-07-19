@@ -78,7 +78,7 @@
 </header>
 <main>
 <h1>Notices</h1>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#noticeModal" th:if="${currentUserRole == 'ADMIN'}">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#noticeModal" th:if="${currentUserRole == 'ADMIN' or currentUserRole == 'ROLE_ADMIN'or currentUserRole == 'EDITOR' or currentUserRole == 'USER' }">
     Create New Notice
 </button>
     <table border="1",
