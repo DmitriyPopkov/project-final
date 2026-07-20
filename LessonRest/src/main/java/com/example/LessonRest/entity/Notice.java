@@ -16,8 +16,7 @@ public class Notice {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    // @Column(name = "created", nullable = false)
-   // private LocalDateTime createdAt;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "newsId", nullable = false)
@@ -31,7 +30,7 @@ public class Notice {
     public Notice(String content, News news) {
         this.content = content;
         this.news = news;
-       // this.createdAt = LocalDateTime.now();
+
     }
 
     // Геттеры и сеттеры
@@ -52,13 +51,7 @@ public class Notice {
         this.content = content;
     }
 
-   // public LocalDateTime getCreatedAt() {
-       // return createdAt;
-   // }
 
-   // public void setCreatedAt(LocalDateTime createdAt) {
-       // this.createdAt = createdAt;
-   // }
 
     public News getNews() {
         return news;

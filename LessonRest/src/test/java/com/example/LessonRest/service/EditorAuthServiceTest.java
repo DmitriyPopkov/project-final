@@ -1,6 +1,7 @@
 package com.example.LessonRest.service;
 
 import com.example.LessonRest.dto.LoginRequestTo;
+
 import com.example.LessonRest.entity.Editor;
 import com.example.LessonRest.repository.EditorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class EditorAuthServiceTest {
@@ -32,6 +33,7 @@ class EditorAuthServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // ✅ Тест: успешная аутентификация с правильным паролем
     @Test
     void testAuthenticate_SuccessWithEncodedPassword() {
         // Given
@@ -55,6 +57,30 @@ class EditorAuthServiceTest {
         verify(passwordEncoder, times(1)).matches("password123", "encoded_password");
     }
 
+    // ✅ Тест: аутентификация завершается неудачей, если пароль не подходит
+    @Test
+    void testAuthenticate_InvalidPassword() {
+        // Given
+        LoginRequestTo request = new LoginRequestTo();
+        request.setUsername("rutcha@rambler.ru");
+        request.setPassword("wrong_password");
+
+        Editor editor = new Editor();
+        editor.setLogin("rutcha@rambler.ru");
+        editor.setPassword("encoded_password");
+
+        when(editorRepository.findByLogin("rutcha@rambler.ru")).thenReturn(Optional.of(editor));
+        when(passwordEncoder.matches("wrong_password", "encoded_password")).thenReturn(false);
+
+        // When
+        var result = editorAuthService.authenticate(request);
+
+        // Then
+        assertNull(result);
+        verify(passwordEncoder, times(1)).matches("wrong_password", "encoded_password");
+    }
+
+    // ✅ Тест: аутентификация завершается неудачей, если редактор не найден
     @Test
     void testAuthenticate_EditorNotFound() {
         // Given
@@ -72,6 +98,7 @@ class EditorAuthServiceTest {
         verify(passwordEncoder, never()).matches(any(), any());
     }
 
+    // ✅ Тест: получение профиля успешно
     @Test
     void testGetProfile_Success() {
         // Given
@@ -95,6 +122,7 @@ class EditorAuthServiceTest {
         assertEquals("Попков", result.getLastname());
     }
 
+    // ✅ Тест: получение профиля — редактор не найден
     @Test
     void testGetProfile_EditorNotFound() {
         // Given
@@ -108,4 +136,10 @@ class EditorAuthServiceTest {
         // Then
         assertNull(result);
     }
+
+
+
+
+
+
 }
