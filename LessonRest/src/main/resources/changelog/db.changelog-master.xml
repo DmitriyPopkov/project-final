@@ -7,6 +7,7 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <!-- Создание схемы -->
+
     <changeSet id="0" author="popkov" dbms="postgresql">
         <sql dbms="postgresql">
             CREATE SCHEMA IF NOT EXISTS distcomp;

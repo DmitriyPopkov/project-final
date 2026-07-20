@@ -42,7 +42,7 @@ public class NoticeDataInitializer implements CommandLineRunner {
 
 
             noticeRepository.save(notice);
-            logger.info("Notice with content 'куку' created successfully!");
+            logger.info("Notice with content 'замечательно написано' created successfully!");
         } else {
             logger.info("Notice already exists for news.");
         }
