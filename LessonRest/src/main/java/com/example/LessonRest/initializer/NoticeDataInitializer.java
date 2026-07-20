@@ -10,9 +10,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 
-/*@Component
+
+@Component
 @Transactional
 public class NoticeDataInitializer implements CommandLineRunner {
 
@@ -37,9 +37,9 @@ public class NoticeDataInitializer implements CommandLineRunner {
 
         if (noticeRepository.findByNews(news).isEmpty()) {
             Notice notice = new Notice();
-            notice.setContent("куку");
+            notice.setContent("замечательно написано");
             notice.setNews(news);
-            notice.setCreatedAt(LocalDateTime.now());
+
 
             noticeRepository.save(notice);
             logger.info("Notice with content 'куку' created successfully!");
@@ -48,4 +48,3 @@ public class NoticeDataInitializer implements CommandLineRunner {
         }
     }
 }
-*/
