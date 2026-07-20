@@ -5,8 +5,10 @@ import com.example.LessonRest.repository.StickerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+@Order(4)
 @Component
 @RequiredArgsConstructor
 @Slf4j

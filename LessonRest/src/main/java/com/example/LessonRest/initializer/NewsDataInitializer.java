@@ -7,10 +7,12 @@ import com.example.LessonRest.repository.NewsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Order(2)
 @Component
 public class NewsDataInitializer implements CommandLineRunner {
 

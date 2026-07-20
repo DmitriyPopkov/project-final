@@ -7,11 +7,12 @@ import com.example.LessonRest.repository.NoticeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
+@Order(3)
 @Component
 @Transactional
 public class NoticeDataInitializer implements CommandLineRunner {
