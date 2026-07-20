@@ -129,9 +129,9 @@
         <td th:text="${news.modified}">2026-07-03</td>
         <td>
             <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-sm btn-info">View</a>
-           <!-- <a th:href="@{/news/{id}/edit(id=${news.id})}" class="btn btn-sm btn-warning" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and news.editorId == currentUserEditorId)}">Edit</a>-->
+
              <a th:href="@{/news/{id}/edit(id=${news.id})}" class="btn btn-sm btn-warning" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and currentUserRole != 'USER' and news.editorId == currentUserEditorId )}">Edit</a>
-           <!-- <button type="button" class="btn btn-sm btn-warning" disabled th:if="${currentUserRole != 'ADMIN' and (currentUserEditorId == null or news.editorId != currentUserEditorId)}">Edit</button>-->
+
              <button type="button" class="btn btn-sm btn-warning" disabled th:if="${currentUserRole != 'ADMIN' and (currentUserEditorId == null or currentUserRole == 'USER' or news.editorId != currentUserEditorId) }">Edit</button>
             <form th:action="@{/news/{id}/delete(id=${news.id})}" method="post" style="display:inline;" th:if="${currentUserRole == 'ADMIN' or (currentUserEditorId != null and news.editorId == currentUserEditorId)}">
                 <button type="submit" class="btn btn-sm btn-danger" th:if="${currentUserRole =='ADMIN' or (currentUserEditorId != null and currentUserRole != 'USER' and news.editorId == currentUserEditorId )}">Delete</button>

@@ -8,20 +8,12 @@
 <body>
 <h1 th:text="${news.title}">News Title</h1>
 
-<!--<p><strong>ID:</strong> <span th:text="${news.id}">1</span></p>-->
+
 <p><strong>Editor:</strong> <span th:text="${editorName != null ? editorName : 'N/A'}">Editor Name</span></p>
 <p><strong>Created:</strong> <span th:text="${news.created}">2026-07-03</span></p>
 <p><strong>Modified:</strong> <span th:text="${news.modified}">2026-07-03</span></p>
 
-<!--<h2>Stickers</h2>
-<ul th:each="sticker : ${stickers}">
-    <li th:text="${sticker.name}">Sticker name</li>
-</ul>
 
-<h2>Notices</h2>
-<ul th:each="notice : ${notices}">
-    <li th:text="${notice.content}">Notice content</li>
-</ul>-->
 
 <form th:action="@{/news/{id}(id=${news.id})}" method="post" style="margin-top: 20px;">
     <p><strong>Title:</strong> <input type="text" name="title" th:value="${news.title}" style="width: 100%;"></p>

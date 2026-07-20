@@ -79,11 +79,7 @@
     Create New Sticker
 </button>
 
-<!--<form th:action="@{/stickers}" method="get" style="margin: 20px 0;">
-    <label for="name">Search by name:</label>
-    <input type="text" id="id" name="name" th:value="${searchName}" />
-    <button type="submit">Search</button>
-</form>-->
+
 
     <table border="1",
            id="dynamicTable">
@@ -91,7 +87,7 @@
     <tr>
         <th>ID</th>
         <th>Name</th>
-        <!--<th>Description</th>-->
+
         <th>Actions</th>
     </tr>
     </thead>
@@ -99,7 +95,7 @@
     <tr th:each="sticker : ${stickers}">
         <td th:text="${sticker.id}">1</td>
         <td th:text="${sticker.name}" th:style="'color: ' + ${sticker.color} ?: '#000000'">Name</td>
-       <!-- <td th:text="${sticker.description}">Description</td>-->
+
         <td>
             <a th:href="@{/news(stickerId=${sticker.id})}">View</a>
             <button type="button" class="btn btn-sm btn-warning edit-sticker-btn" data-bs-toggle="modal" data-bs-target="#editStickerModal" th:data-id="${sticker.id}" th:data-name="${sticker.name}" th:data-color="${sticker.color}" th:if="${currentUserRole == 'ADMIN'}">Edit</button>

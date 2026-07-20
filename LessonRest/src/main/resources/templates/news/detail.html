@@ -13,7 +13,7 @@
 <body>
 <h1 th:text="${news.title}">News Title</h1>
 
-<!--<p><strong>ID:</strong> <span th:text="${news.id}">1</span></p>-->
+
 <p><strong>Title:</strong> <span th:text="${news.title}">Title</span></p>
 <p><strong>Content:</strong> <span th:text="${news.content}" style="font-size: 20px; font-weight: bold; color:#33ffff;">Content</span></p>
 <p><strong>Editor:</strong> <span th:text="${editorName != null ? editorName : 'N/A'}">Editor Name</span></p>
@@ -43,7 +43,7 @@
    <li th:text="${notice.content}">Notice content</li>
 </ul>
 
-<!--<a th:href="@{/notices(openModal='true')}" class="btn btn-info mt-3" id="commentLink">Комментировать</a>-->
+
 
 <a th:href="@{/news}" style="color: blue; font-size: 20px;">Back to News</a>
 <a th:href="@{/notices/create(openModal='true', newsId=${news.id})}" style="color: blue; font-size: 17px; margin-left: 10px;">Комментировать</a>
